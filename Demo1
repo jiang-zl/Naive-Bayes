@@ -1,0 +1,99 @@
+from math import *
+
+
+def get_class(ds, c):
+    ret = 0
+    for cur in ds:
+        if c == cur[-1]:
+            ret += 1
+    return ret
+
+
+def get_class_pro(ds, c, x):
+    ret = 0
+    for cur in ds:
+        if c == cur[-1]:
+            for val in cur:
+                if x == val:
+                    ret += 1
+    return ret
+
+
+def get_sum(ds, c, pos):
+    ret = 0
+    for cur in ds:
+        if c == cur[-1]:
+            ret += cur[pos]
+    return ret
+
+
+def get_sum_q(ds, c, pos, miu):
+    ret = 0
+    for cur in ds:
+        if c == cur[-1]:
+            ret += (cur[pos] - miu)**2
+    return ret
+
+
+def get_distribute(val, miu, sigma):
+    return 1/sqrt(2 * pi) / sigma * exp(-(val - miu) * (val - miu) / (2 * sigma * sigma))
+
+
+if __name__ == '__main__':
+    dataSet = [
+            ['青绿', '蜷缩', '浊响', '清晰', '凹陷', '硬滑', 0.697, 0.460, '好瓜'],
+            ['乌黑', '蜷缩', '沉闷', '清晰', '凹陷', '硬滑', 0.774, 0.376, '好瓜'],
+            ['乌黑', '蜷缩', '浊响', '清晰', '凹陷', '硬滑', 0.634, 0.264, '好瓜'],
+            ['青绿', '蜷缩', '沉闷', '清晰', '凹陷', '硬滑', 0.608, 0.318, '好瓜'],
+            ['浅白', '蜷缩', '浊响', '清晰', '凹陷', '硬滑', 0.556, 0.215, '好瓜'],
+            ['青绿', '稍蜷', '浊响', '清晰', '稍凹', '软粘', 0.403, 0.237, '好瓜'],
+            ['乌黑', '稍蜷', '浊响', '稍糊', '稍凹', '软粘', 0.481, 0.149, '好瓜'],
+            ['乌黑', '稍蜷', '浊响', '清晰', '稍凹', '硬滑', 0.437, 0.211, '好瓜'],
+            ['乌黑', '稍蜷', '沉闷', '稍糊', '稍凹', '硬滑', 0.666, 0.091, '坏瓜'],
+            ['青绿', '硬挺', '清脆', '清晰', '平坦', '软粘', 0.243, 0.267, '坏瓜'],
+            ['浅白', '硬挺', '清脆', '模糊', '平坦', '硬滑', 0.245, 0.057, '坏瓜'],
+            ['浅白', '蜷缩', '浊响', '模糊', '平坦', '软粘', 0.343, 0.099, '坏瓜'],
+            ['青绿', '稍蜷', '浊响', '稍糊', '凹陷', '硬滑', 0.639, 0.161, '坏瓜'],
+            ['浅白', '稍蜷', '沉闷', '稍糊', '凹陷', '硬滑', 0.657, 0.198, '坏瓜'],
+            ['乌黑', '稍蜷', '浊响', '清晰', '稍凹', '软粘', 0.360, 0.370, '坏瓜'],
+            ['浅白', '蜷缩', '浊响', '模糊', '平坦', '硬滑', 0.593, 0.042, '坏瓜'],
+            ['青绿', '蜷缩', '沉闷', '稍糊', '稍凹', '硬滑', 0.719, 0.103, '坏瓜']
+        ]
+    X = ['青绿', '蜷缩', '浊响', '清晰', '凹陷', '硬滑', 0.697, 0.460]
+    P_class = []
+    # c1=good, c2=bad
+    P_c1_X, P_c2_X = [], []
+    good_count = get_class(dataSet, '好瓜')
+    bad_count = get_class(dataSet, '坏瓜')
+    P_class.append(good_count / (good_count + bad_count))
+    P_class.append(bad_count / (good_count + bad_count))
+    cmp_c1, cmp_c2 = P_class[0], P_class[1]
+    for i in range(len(X)):
+        cur_class_pro1, cur_class_pro2 = 1, 1
+        if isinstance(X[i], str):
+            cur_class_pro1 = get_class_pro(dataSet, '好瓜', X[i]) / good_count
+            P_c1_X.append(cur_class_pro1)
+            cur_class_pro2 = get_class_pro(dataSet, '坏瓜', X[i]) / bad_count
+            P_c2_X.append(cur_class_pro2)
+        else:
+            miu1 = get_sum(dataSet, '好瓜', i)
+            miu2 = get_sum(dataSet, '坏瓜', i)
+            sigma1 = get_sum_q(dataSet, '好瓜', i, miu1)
+            sigma2 = get_sum_q(dataSet, '坏瓜', i, miu2)
+            cur_class_pro1 = get_distribute(X[i], miu1, sigma1)
+            P_c1_X.append(cur_class_pro1)
+            cur_class_pro2 = get_distribute(X[i], miu2, sigma2)
+            P_c2_X.append(cur_class_pro2)
+        cmp_c1 *= cur_class_pro1
+        cmp_c2 *= cur_class_pro2
+    print("好瓜的概率= ", cmp_c1)
+    print("坏瓜的概率= ", cmp_c2)
+    if cmp_c1 > cmp_c2:
+        print('测试的瓜是好瓜！')
+    else:
+        print('测试的瓜是坏瓜！')
+    # 下面的是模型！
+    print('朴素贝叶斯的模型W是：')
+    print(P_class)
+    print(P_c1_X)
+    print(P_c2_X)
