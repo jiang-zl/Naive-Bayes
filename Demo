@@ -32,7 +32,7 @@ def get_sigma(ds, c, pos, miu, n):
     for cur in ds:
         if c == cur[-1]:
             ret += (cur[pos] - miu)**2
-    ret = ret / n
+    ret = ret / (n - 1)
     return sqrt(ret)
 
 
