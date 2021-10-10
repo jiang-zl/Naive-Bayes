@@ -27,16 +27,17 @@ def get_sum(ds, c, pos):
     return ret
 
 
-def get_sum_q(ds, c, pos, miu):
+def get_sigma(ds, c, pos, miu, n):
     ret = 0
     for cur in ds:
         if c == cur[-1]:
             ret += (cur[pos] - miu)**2
-    return ret
+    ret = ret / n
+    return sqrt(ret)
 
 
 def get_distribute(val, miu, sigma):
-    return 1/sqrt(2 * pi) / sigma * exp(-(val - miu) * (val - miu) / (2 * sigma * sigma))
+    return 1/sqrt(2 * pi) / sigma * exp(-(val - miu)**2 / 2 / sigma / sigma)
 
 
 if __name__ == '__main__':
@@ -76,10 +77,10 @@ if __name__ == '__main__':
             cur_class_pro2 = get_class_pro(dataSet, '坏瓜', X[i]) / bad_count
             P_c2_X.append(cur_class_pro2)
         else:
-            miu1 = get_sum(dataSet, '好瓜', i)
-            miu2 = get_sum(dataSet, '坏瓜', i)
-            sigma1 = get_sum_q(dataSet, '好瓜', i, miu1)
-            sigma2 = get_sum_q(dataSet, '坏瓜', i, miu2)
+            miu1 = get_sum(dataSet, '好瓜', i) / good_count
+            miu2 = get_sum(dataSet, '坏瓜', i) / bad_count
+            sigma1 = get_sigma(dataSet, '好瓜', i, miu1, good_count)
+            sigma2 = get_sigma(dataSet, '坏瓜', i, miu2, bad_count)
             cur_class_pro1 = get_distribute(X[i], miu1, sigma1)
             P_c1_X.append(cur_class_pro1)
             cur_class_pro2 = get_distribute(X[i], miu2, sigma2)
